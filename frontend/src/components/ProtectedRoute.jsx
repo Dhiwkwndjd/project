@@ -1,16 +1,27 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-// Защищает вложенные маршруты: пускает дальше только с access-токеном.
+// Защищает вложенные маршруты: пускает дальше только авторизованного пользователя.
 function ProtectedRoute() {
-  const access = localStorage.getItem('access')
+  const { user, loading } = useAuth()
 
-  // Токена нет — отправляем на страницу входа.
-  if (!access) {
+  // Пока идёт первоначальная проверка авторизации — ничего не перенаправляем.
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="card">
+          <p>Загрузка...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Пользователя нет — отправляем на страницу входа.
+  if (!user) {
     return <Navigate to="/login/" replace />
   }
 
-  // Токен есть — показываем вложенную страницу.
-  // Реальную проверку токена делает страница профиля (запрос к /auth/me/).
+  // Пользователь авторизован — показываем вложенную страницу.
   return <Outlet />
 }
 

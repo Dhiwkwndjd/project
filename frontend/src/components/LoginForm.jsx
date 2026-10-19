@@ -1,38 +1,60 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 function LoginForm() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [form, setForm] = useState({ username: '', password: '' })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [serverError, setServerError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  // Проверяем обязательные поля.
+  function validate(values) {
+    const next = {}
+    if (!values.username.trim()) {
+      next.username = 'Введите имя пользователя.'
+    }
+    if (!values.password) {
+      next.password = 'Введите пароль.'
+    }
+    return next
+  }
 
   function handleChange(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault()
-    setError('')
-    setLoading(true)
+  function handleBlur() {
+    // Показываем ошибки поля сразу после того, как ушли из него.
+    setErrors(validate(form))
+  }
 
+  const isFormFilled = form.username.trim() !== '' && form.password !== ''
+
+  async function handleSubmit(event) {
+    // Не даём браузеру перезагрузить страницу.
+    event.preventDefault()
+    setServerError('')
+
+    const validationErrors = validate(form)
+    setErrors(validationErrors)
+    if (Object.keys(validationErrors).length > 0) {
+      return
+    }
+
+    setSubmitting(true)
     try {
       // SimpleJWT ожидает поля username и password.
-      const { data } = await api.post('auth/login/', form)
-
-      // Сохраняем токены, чтобы клиент подставлял их в следующие запросы.
-      localStorage.setItem('access', data.access)
-      localStorage.setItem('refresh', data.refresh)
-
-      // После входа — на защищённую страницу профиля.
+      await login(form.username, form.password)
       navigate('/profile/')
     } catch (err) {
-      setError(err.message)
+      setServerError(err.message || 'Не удалось войти. Проверьте данные.')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -41,9 +63,9 @@ function LoginForm() {
       <div className="card">
         <h1>Вход</h1>
 
-        {error && <p className="error">{error}</p>}
+        {serverError && <p className="error">{serverError}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="form-field">
             <label htmlFor="username">Имя пользователя</label>
             <input
@@ -52,9 +74,11 @@ function LoginForm() {
               type="text"
               value={form.username}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="username"
-              required
+              className={errors.username ? 'input-error' : ''}
             />
+            {errors.username && <span className="field-error">{errors.username}</span>}
           </div>
 
           <div className="form-field">
@@ -65,13 +89,19 @@ function LoginForm() {
               type="password"
               value={form.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="current-password"
-              required
+              className={errors.password ? 'input-error' : ''}
             />
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
-          <button className="btn" type="submit" disabled={loading}>
-            {loading ? 'Отправка...' : 'Войти'}
+          <button
+            className="btn"
+            type="submit"
+            disabled={submitting || !isFormFilled}
+          >
+            {submitting ? 'Загрузка...' : 'Войти'}
           </button>
         </form>
 

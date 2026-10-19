@@ -1,34 +1,109 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
+
+// Простая проверка формата email.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function RegisterForm() {
   const navigate = useNavigate()
+  const { register } = useAuth()
 
-  // Одно состояние для всех трёх полей формы.
   const [form, setForm] = useState({ username: '', email: '', password: '' })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [serverError, setServerError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  function validate(values) {
+    const next = {}
+
+    if (!values.username.trim()) {
+      next.username = 'Введите имя пользователя.'
+    }
+
+    if (!values.email.trim()) {
+      next.email = 'Введите email.'
+    } else if (!EMAIL_RE.test(values.email.trim())) {
+      next.email = 'Введите корректный email.'
+    }
+
+    if (!values.password) {
+      next.password = 'Введите пароль.'
+    } else if (values.password.length < 8) {
+      next.password = 'Пароль должен содержать не менее 8 символов.'
+    }
+
+    return next
+  }
 
   function handleChange(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  async function handleSubmit(event) {
-    // Не даём браузеру перезагрузить страницу.
-    event.preventDefault()
-    setError('')
-    setLoading(true)
+  function handleBlur() {
+    setErrors(validate(form))
+  }
 
+  const isFormFilled =
+    form.username.trim() !== '' && form.email.trim() !== '' && form.password !== ''
+
+  // Достаём из ответа сервера ошибку конкретного поля (например, username).
+  function serverFieldError(err, field) {
+    const data = err.data
+    if (!data || typeof data !== 'object') {
+      return ''
+    }
+    const value = data[field]
+    if (!value) {
+      return ''
+    }
+    const text = Array.isArray(value) ? value[0] : String(value)
+
+    // Делаем типичные ошибки понятнее.
+    if (/already exists/i.test(text)) {
+      return field === 'username'
+        ? 'Такое имя пользователя уже занято.'
+        : 'Такая электронная почта уже занята.'
+    }
+    return text
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setServerError('')
+
+    const validationErrors = validate(form)
+    setErrors(validationErrors)
+    if (Object.keys(validationErrors).length > 0) {
+      return
+    }
+
+    setSubmitting(true)
     try {
-      await api.post('auth/register/', form)
+      await register({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      })
       // Успешная регистрация — отправляем пользователя на вход.
       navigate('/login/')
     } catch (err) {
-      setError(err.message)
+      const usernameError = serverFieldError(err, 'username')
+      const emailError = serverFieldError(err, 'email')
+      const passwordError = serverFieldError(err, 'password')
+
+      if (usernameError || emailError || passwordError) {
+        setErrors({
+          username: usernameError,
+          email: emailError,
+          password: passwordError,
+        })
+      } else {
+        setServerError(err.message || 'Не удалось зарегистрироваться.')
+      }
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -37,9 +112,9 @@ function RegisterForm() {
       <div className="card">
         <h1>Регистрация</h1>
 
-        {error && <p className="error">{error}</p>}
+        {serverError && <p className="error">{serverError}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="form-field">
             <label htmlFor="username">Имя пользователя</label>
             <input
@@ -48,9 +123,11 @@ function RegisterForm() {
               type="text"
               value={form.username}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="username"
-              required
+              className={errors.username ? 'input-error' : ''}
             />
+            {errors.username && <span className="field-error">{errors.username}</span>}
           </div>
 
           <div className="form-field">
@@ -61,9 +138,11 @@ function RegisterForm() {
               type="email"
               value={form.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="email"
-              required
+              className={errors.email ? 'input-error' : ''}
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-field">
@@ -74,13 +153,19 @@ function RegisterForm() {
               type="password"
               value={form.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="new-password"
-              required
+              className={errors.password ? 'input-error' : ''}
             />
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
-          <button className="btn" type="submit" disabled={loading}>
-            {loading ? 'Отправка...' : 'Зарегистрироваться'}
+          <button
+            className="btn"
+            type="submit"
+            disabled={submitting || !isFormFilled}
+          >
+            {submitting ? 'Загрузка...' : 'Зарегистрироваться'}
           </button>
         </form>
 

@@ -57,6 +57,17 @@
   outline-offset: 1px;
 }
 
+/* Поле с ошибкой. */
+.form-field input.input-error {
+  border-color: #dc2626;
+}
+
+/* Текст ошибки под конкретным полем. */
+.field-error {
+  color: #dc2626;
+  font-size: 14px;
+}
+
 /* Основная кнопка. */
 .btn {
   width: 100%;
