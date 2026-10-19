@@ -25,7 +25,7 @@
 ## Итоговая история коммитов
 
 ```
-Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) + логи чата   ← текущий
+7ecfb35  Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) + логи чата
 1f12a57  Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) + логи чата
 0b8372c  Обновление истории коммитов в логах чата
 6ee223d  Блок 4: рефакторинг backend (UserProfile, JWT/CORS, API /me/) + логи чата
