@@ -34,3 +34,25 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Проверки (тесты, сборка, линт)
+
+Backend-тесты (12 тестов приложения `authentication`):
+
+```bash
+# Вариант 1: из папки backend (рекомендуется)
+cd backend
+venv/Scripts/python.exe manage.py test
+
+# Вариант 2: из корня репозитория — обязательно указывать приложение,
+# иначе Django найдёт 0 тестов (поиск идёт от текущего каталога).
+backend/venv/Scripts/python.exe backend/manage.py test authentication
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run build
+npm run lint
+```

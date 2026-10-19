@@ -21,10 +21,13 @@
 | [10-block4-backend-refactor.md](10-block4-backend-refactor.md) | Блок 4: backend-рефакторинг (UserProfile, JWT/CORS, API /me/) |
 | [11-block5-frontend-refactor.md](11-block5-frontend-refactor.md) | Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) |
 | [12-block6-profile-edit.md](12-block6-profile-edit.md) | Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) |
+| [13-block7-build-lint-loop.md](13-block7-build-lint-loop.md) | Блок 7: приемка — тесты backend, build и lint frontend |
 
 ## Итоговая история коммитов
 
 ```
+Блок 7: приемка (тесты backend, build и lint frontend) + раздел проверок в AGENTS.md + логи чата   ← текущий
+ea26198  Обновление истории коммитов в логах чата
 7ecfb35  Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) + логи чата
 1f12a57  Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) + логи чата
 0b8372c  Обновление истории коммитов в логах чата
