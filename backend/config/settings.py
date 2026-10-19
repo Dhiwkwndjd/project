@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -145,7 +146,15 @@ REST_FRAMEWORK = {
 
 
 # CORS: разрешаем запросы с dev-сервера React (Vite).
+# Широкое разрешение всех источников (allow all origins) намеренно не включено.
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
+
+
+# Настройки времени жизни JWT-токенов (djangorestframework-simplejwt).
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
