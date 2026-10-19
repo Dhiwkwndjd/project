@@ -20,11 +20,14 @@
 | [09-chat-logs-folder.md](09-chat-logs-folder.md) | Создание этой папки с логами |
 | [10-block4-backend-refactor.md](10-block4-backend-refactor.md) | Блок 4: backend-рефакторинг (UserProfile, JWT/CORS, API /me/) |
 | [11-block5-frontend-refactor.md](11-block5-frontend-refactor.md) | Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) |
+| [12-block6-profile-edit.md](12-block6-profile-edit.md) | Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) |
 
 ## Итоговая история коммитов
 
 ```
+Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) + логи чата   ← текущий
 1f12a57  Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) + логи чата
+0b8372c  Обновление истории коммитов в логах чата
 6ee223d  Блок 4: рефакторинг backend (UserProfile, JWT/CORS, API /me/) + логи чата
 1699ac0  Блок 3: фронтенд с формами регистрации и входа, защищённым профилем и API-клиентом
 5add368  Блок 2: JWT-аутентификация (регистрация, вход, refresh, профиль пользователя)

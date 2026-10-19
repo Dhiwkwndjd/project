@@ -66,6 +66,14 @@ export function AuthProvider({ children }) {
     return data
   }
 
+  // Обновление профиля: отправляем PATCH /auth/me/ и синхронизируем user,
+  // чтобы изменения сразу были видны во всех компонентах.
+  async function updateProfile(formData) {
+    const { data } = await api.patch('auth/me/', formData)
+    setUser(data)
+    return data
+  }
+
   // Выход: удаляем токены и очищаем пользователя.
   function logout() {
     localStorage.removeItem('access')
@@ -73,7 +81,7 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const value = { user, loading, login, register, logout }
+  const value = { user, loading, login, register, updateProfile, logout }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
