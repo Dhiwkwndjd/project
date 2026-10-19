@@ -26,7 +26,7 @@
 ## Итоговая история коммитов
 
 ```
-Блок 7: приемка (тесты backend, build и lint frontend) + раздел проверок в AGENTS.md + логи чата   ← текущий
+6b9e6c7  Блок 7: приемка (тесты backend, build и lint frontend) + раздел проверок в AGENTS.md + логи чата
 ea26198  Обновление истории коммитов в логах чата
 7ecfb35  Блок 6: редактирование профиля (bio, avatar_url, PATCH /auth/me/) + логи чата
 1f12a57  Блок 5: frontend-рефакторинг (Axios refresh-токен, AuthContext) + логи чата
